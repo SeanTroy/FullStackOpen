@@ -6,13 +6,7 @@ const Filter = ({ value, onChange }) =>
 
 const Language = ({ language }) => <li>{language}</li>
 
-const CountryName = ({ country }) => {
-	return (
-		<>
-			<p>{country.name.common} <button>show</button></p>
-		</>
-	)
-}
+const CountryName = ({ country }) => <p>{country.name.common}</p>
 
 const CountryDetailed = ({ country }) => {
 	// console.log('country data', {country})
@@ -27,8 +21,8 @@ const CountryDetailed = ({ country }) => {
 					<Language key={i} language={language} />
 				)}
 			</ul>
-			<img alt={`Flag of ${country.name.common}`}
-				title={`Flag of ${country.name.common}`}
+			<img alt={"Flag of " + country.name.common}
+				title={"Flag of " + country.name.common}
 				src={country.flags.png}>
 			</img>
 		</>

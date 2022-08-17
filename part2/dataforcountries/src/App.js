@@ -4,11 +4,11 @@ import axios from 'axios'
 const Filter = ({ value, onChange }) =>
 	<div>find countries <input value={value} onChange={onChange} /></div>
 
-const CountryName = ({ country, setNewFilter }) => {
-	console.log({ setNewFilter })
+const CountryName = ({ country, stateChanger }) => {
+	// console.log({ stateChanger })
 	return (
 		<>
-			<p>{country.name.common} <button>show</button></p>
+			<p>{country.name.common} <button onClick={() => stateChanger(country.name.common)}>show</button></p>
 		</>
 	)
 }
@@ -34,7 +34,7 @@ const CountryDetailed = ({ country }) => {
 	)
 }
 
-const Countries = ({ countries, parentCallback }) => {
+const Countries = ({ countries, stateChanger }) => {
 	if (countries.length > 10) {
 		return (<p>Too many matches, specify another filter</p>)
 	}
@@ -44,7 +44,7 @@ const Countries = ({ countries, parentCallback }) => {
 	return (
 		<>
 			{countries.map((country, i) =>
-				<CountryName key={i} country={country} />
+				<CountryName key={i} country={country} stateChanger={stateChanger}/>
 			)}
 		</>
 	)
@@ -76,8 +76,7 @@ function App() {
 	return (
 		<div>
 			<Filter value={newFilter} onChange={handleFilterChange} />
-			<Countries countries={countriesToShow} />
-			<button onClick={() => setNewFilter("Finland")}>show Finland</button>
+			<Countries countries={countriesToShow} stateChanger={setNewFilter}/>
 		</div>
 	);
 }

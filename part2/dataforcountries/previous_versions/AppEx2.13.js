@@ -14,23 +14,7 @@ const CountryName = ({ country, setNewFilter }) => {
 }
 
 const CountryDetailed = ({ country }) => {
-	const [isLoading, setLoading] = useState(true);
-	const [weather, setWeather] = useState([]);
 	const languages = Object.values(country.languages)
-
-	// console.log('weather')
-	axios
-		.get(`https://api.openweathermap.org/data/2.5/weather?q=${country.capital}&units=metric&appid=${process.env.REACT_APP_API_KEY}`)
-		.then(response => {
-			// console.log(response.data)
-			setWeather(response.data)
-			setLoading(false);
-		})
-
-	if (isLoading) {
-		return <div>Loading...</div>;
-	}
-
 	return (
 		<>
 			<h2>{country.name.common}</h2>
@@ -46,13 +30,6 @@ const CountryDetailed = ({ country }) => {
 				title={`Flag of ${country.name.common}`}
 				src={country.flags.png}>
 			</img>
-			<h2>Weather in {country.capital}</h2>
-			<p>temperature {weather.main.temp} Celsius</p>
-			<img alt={`Weather of ${country.capital}`}
-				title={`Weather of ${country.capital}`}
-				src={"http://openweathermap.org/img/wn/" + weather.weather.icon + ".png"}>
-			</img>
-			<p>wind {weather.wind.speed} m/s</p>
 		</>
 	)
 }
@@ -67,7 +44,7 @@ const Countries = ({ countries, setNewFilter }) => {
 	return (
 		<>
 			{countries.map((country, i) =>
-				<CountryName key={i} country={country} setNewFilter={setNewFilter} />
+				<CountryName key={i} country={country} setNewFilter={setNewFilter}/>
 			)}
 		</>
 	)
@@ -99,7 +76,7 @@ function App() {
 	return (
 		<div>
 			<Filter value={newFilter} onChange={handleFilterChange} />
-			<Countries countries={countriesToShow} setNewFilter={setNewFilter} />
+			<Countries countries={countriesToShow} setNewFilter={setNewFilter}/>
 		</div>
 	);
 }

@@ -50,7 +50,7 @@ const CountryDetailed = ({ country }) => {
 			<p>temperature {weather.main.temp} Celsius</p>
 			<img alt={`Weather of ${country.capital}`}
 				title={`Weather of ${country.capital}`}
-				src={"http://openweathermap.org/img/wn/" + weather.weather.icon + ".png"}>
+				src={`http://openweathermap.org/img/wn/${weather.weather.icon}.png`}>
 			</img>
 			<p>wind {weather.wind.speed} m/s</p>
 		</>

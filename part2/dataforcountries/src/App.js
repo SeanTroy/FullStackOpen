@@ -22,8 +22,8 @@ const CountryDetailed = ({ country }) => {
 		axios
 			.get(`https://api.openweathermap.org/data/2.5/weather?q=${country.capital}&units=metric&appid=${process.env.REACT_APP_API_KEY}`)
 			.then(response => {
-				console.log(`weather data for ${country.capital} fetched`)
-				console.log(response.data)
+				// console.log(`weather data for ${country.capital} fetched`)
+				// console.log(response.data)
 				setWeather(response.data)
 				setLoading(false);
 			})

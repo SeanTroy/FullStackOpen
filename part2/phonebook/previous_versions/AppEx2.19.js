@@ -1,9 +1,8 @@
 import { useState, useEffect } from 'react'
 import nameService from './services/phonebook'
 
-const Notification = ({ message, errorState }) => {
-
-	let notificationStyle = {
+const Notification = ({ message }) => {
+	const notificationStyle = {
 		color: 'green',
 		background: 'lightgrey',
 		fontSize: 20,
@@ -11,10 +10,6 @@ const Notification = ({ message, errorState }) => {
 		borderRadius: 5,
 		padding: 10,
 		marginBottom: 10,
-	}
-
-	if (errorState) {
-		notificationStyle.color = 'red'
 	}
 
 	if (message === null) {
@@ -41,8 +36,7 @@ const PersonForm = ({ addName, newName, onNameChange, newNumber, onNumberChange 
 	)
 }
 
-const Person = ({ name, number, id, setPersons, showMessage }) => {
-
+const Person = ({ name, number, id, setPersons }) => {
 	const deleteNote = id => {
 		if (window.confirm(`Delete ${name}?`)) {
 			nameService.remove(id)
@@ -50,7 +44,6 @@ const Person = ({ name, number, id, setPersons, showMessage }) => {
 					nameService.getAll()
 						.then(newNames => {
 							setPersons(newNames)
-							showMessage(`Deleted ${name}`, 'success')
 						}))
 		}
 	}
@@ -60,12 +53,11 @@ const Person = ({ name, number, id, setPersons, showMessage }) => {
 	)
 }
 
-const Persons = ({ persons, setPersons, showMessage }) => {
+const Persons = ({ persons, setPersons }) => {
 	return (
 		<>
 			{persons.map(person =>
-				<Person key={person.name} name={person.name} number={person.number} id={person.id}
-					setPersons={setPersons} showMessage={showMessage} />
+				<Person key={person.name} name={person.name} number={person.number} id={person.id} setPersons={setPersons} />
 			)}
 		</>
 	)
@@ -76,8 +68,7 @@ const App = () => {
 	const [newName, setNewName] = useState('')
 	const [newNumber, setNewNumber] = useState('')
 	const [newFilter, setNewFilter] = useState('')
-	const [message, setMessage] = useState(null)
-	const [errorState, setErrorState] = useState(false)
+	const [message, setMessage] = useState('')
 
 	useEffect(() => {
 		nameService
@@ -87,14 +78,12 @@ const App = () => {
 			})
 	}, [])
 
-	const showMessage = (content, style) => {
-		if (style === 'error') {
-			setErrorState(true)
-		}
-		setMessage(`${content}`)
+	const showMessage = name => {
+		setMessage(
+			`Added ${name}`
+		)
 		setTimeout(() => {
 			setMessage(null)
-			setErrorState(false)
 		}, 4000)
 	}
 
@@ -111,10 +100,10 @@ const App = () => {
 						setPersons(persons.map(person => person.name !== newName ? person : returnedName))
 					})
 					.catch(error => {
-						showMessage(`Information of '${newName}' has already been removed from server`, 'error')
+						alert(`The name '${newName}' was already deleted from server`)
 						setPersons(persons.filter(person => person.name !== newName))
 					})
-				showMessage(`Changed ${newName}'s number`, 'success')
+				showMessage(newName)
 			}
 		} else {
 			const nameObject = { name: newName, number: newNumber }
@@ -123,7 +112,7 @@ const App = () => {
 				.then(returnedName => {
 					setPersons(persons.concat(returnedName))
 				})
-			showMessage(`Added ${newName}`, 'success')
+			showMessage(newName)
 		}
 	}
 
@@ -146,13 +135,13 @@ const App = () => {
 	return (
 		<div>
 			<h2>Phonebook</h2>
-			<Notification message={message} errorState={errorState} />
+			<Notification message={message} />
 			<Filter value={newFilter} onChange={handleFilterChange} />
 			<h3>add a new</h3>
 			<PersonForm addName={addName} newName={newName} onNameChange={handleNameChange}
 				newNumber={newNumber} onNumberChange={handleNumberChange} />
 			<h3>Numbers</h3>
-			<Persons persons={personsToShow} setPersons={setPersons} showMessage={showMessage} />
+			<Persons persons={personsToShow} setPersons={setPersons} />
 		</div>
 	)
 }

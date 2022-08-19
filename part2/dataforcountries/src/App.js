@@ -19,22 +19,18 @@ const CountryDetailed = ({ country }) => {
 	const languages = Object.values(country.languages)
 
 	useEffect(() => {
-		// console.log('weather')
 		axios
 			.get(`https://api.openweathermap.org/data/2.5/weather?q=${country.capital}&units=metric&appid=${process.env.REACT_APP_API_KEY}`)
 			.then(response => {
+				console.log(`weather data for ${country.capital} fetched`)
 				console.log(response.data)
 				setWeather(response.data)
 				setLoading(false);
-				console.log(weather.icon)
 			})
-	}, [country.capital, weather.icon])
+	}, [country.capital])
 
 	if (isLoading) {
-		return <div>Loading...			<img alt={`Weather of ${country.capital}`}
-			title={`Weather of ${country.capital}`}
-			src={`http://openweathermap.org/img/wn/02n@2x.png`}>
-		</img></div>;
+		return <div>Loading...</div>;
 	}
 
 	return (
@@ -56,7 +52,7 @@ const CountryDetailed = ({ country }) => {
 			<p>temperature {weather.main.temp} Celsius</p>
 			<img alt={`Weather of ${country.capital}`}
 				title={`Weather of ${country.capital}`}
-				src={`http://openweathermap.org/img/wn/${weather.icon}@2x.png`}>
+				src={`http://openweathermap.org/img/wn/${weather.weather[0].icon}@2x.png`}>
 			</img>
 			<p>wind {weather.wind.speed} m/s</p>
 		</>

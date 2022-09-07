@@ -161,7 +161,7 @@ const App = () => {
 				<Menu />
 				<div>{notification}</div>
 				<Routes>
-					<Route path="/anecdotes/:id" element={<Anecdote anecdoteById={anecdoteById}/>} />
+					<Route path="/anecdotes/:id" element={<Anecdote anecdoteById={anecdoteById} />} />
 					<Route path="/" element={<AnecdoteList anecdotes={anecdotes} />} />
 					<Route path="/create" element={<CreateNew addNew={addNew} setNotification={setNotification} />} />
 					<Route path="/about" element={<About />} />

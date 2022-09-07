@@ -67,9 +67,9 @@ const Footer = () => (
 )
 
 const CreateNew = (props) => {
-	const { reset: removeContent, ...content } = useField('text')
-	const { reset: removeAuthor, ...author } = useField('text')
-	const { reset: removeInfo, ...info } = useField('text')
+	const content = useField('content')
+	const author = useField('author')
+	const info = useField('number')
 
 	const navigate = useNavigate()
 
@@ -86,9 +86,9 @@ const CreateNew = (props) => {
 	}
 
 	const resetValues = () => {
-		removeContent()
-		removeAuthor()
-		removeInfo()
+		content.reset()
+		author.reset()
+		info.reset()
 	}
 
 	const showNotification = (content) => {
@@ -106,7 +106,7 @@ const CreateNew = (props) => {
 				<div>author <input  {...author} /></div>
 				<div>url for more info <input  {...info} /></div>
 				<button>create</button>
-				<button type='button' onClick={resetValues}>reset</button>
+				<button type='button' onClick={() => resetValues()}>reset</button>
 			</form>
 			<br></br>
 		</div>

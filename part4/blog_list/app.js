@@ -2,6 +2,7 @@ require('dotenv').config()
 const config = require('./utils/config')
 const logger = require('./utils/logger')
 const express = require('express')
+require('express-async-errors') // to eliminate the need for try/catch, automatically passes to error handling middleware
 const app = express()
 const cors = require('cors')
 const mongoose = require('mongoose')

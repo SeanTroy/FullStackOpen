@@ -13,87 +13,91 @@ beforeEach(async () => {
 	await Promise.all(promiseArray)
 })
 
-test('blogs are returned as json', async () => {
-	await api
-		.get('/api/blogs')
-		.expect(200)
-		.expect('Content-Type', /application\/json/)
+describe('when retrieving blogs', () => {
+	test('blogs are returned as json', async () => {
+		await api
+			.get('/api/blogs')
+			.expect(200)
+			.expect('Content-Type', /application\/json/)
+	})
+
+	test('all blogs are returned', async () => {
+		const response = await api.get('/api/blogs')
+
+		expect(response.body).toHaveLength(helper.initialBlogs.length)
+	})
+
+	test('unique identifier is named id', async () => {
+		const response = await api.get('/api/blogs')
+
+		expect(response.body[0].id).toBeDefined()
+	})
 })
 
-test('all blogs are returned', async () => {
-	const response = await api.get('/api/blogs')
+describe('when adding blogs', () => {
+	test('a new blog can be added', async () => {
+		const newBlog = {
+			title: "Script Notes",
+			author: "Craig Mazin",
+			url: "https://johnaugust.com/scriptnotes",
+			likes: 16,
+		}
 
-	expect(response.body).toHaveLength(helper.initialBlogs.length)
-})
+		await api
+			.post('/api/blogs')
+			.send(newBlog)
+			.expect(201)
 
-test('unique identifier is named id', async () => {
-	const response = await api.get('/api/blogs')
+		const currentBlogs = await helper.blogsInDatabase()
+		expect(currentBlogs).toHaveLength(helper.initialBlogs.length + 1)
 
-	expect(response.body[0].id).toBeDefined()
-})
+		const blogContents = currentBlogs.map(blog => blog.title)
+		expect(blogContents).toContain("Script Notes")
+	})
 
-test('a new blog can be added', async () => {
-	const newBlog = {
-		title: "Script Notes",
-		author: "Craig Mazin",
-		url: "https://johnaugust.com/scriptnotes",
-		likes: 16,
-	}
+	test('missing likes defaults to zero', async () => {
+		const newBlog = {
+			title: "Script Notes",
+			author: "Craig Mazin",
+			url: "https://johnaugust.com/scriptnotes"
+		}
 
-	await api
-		.post('/api/blogs')
-		.send(newBlog)
-		.expect(201)
+		await api
+			.post('/api/blogs')
+			.send(newBlog)
+			.expect(201)
 
-	const currentBlogs = await helper.blogsInDatabase()
-	expect(currentBlogs).toHaveLength(helper.initialBlogs.length + 1)
+		const currentBlogs = await helper.blogsInDatabase()
+		const addedBlog = currentBlogs.filter(blog => blog.title === "Script Notes")
 
-	const blogContents = currentBlogs.map(blog => blog.title)
-	expect(blogContents).toContain("Script Notes")
-})
+		expect(addedBlog[0].likes).toEqual(0)
+	})
 
-test('missing likes defaults to zero', async () => {
-	const newBlog = {
-		title: "Script Notes",
-		author: "Craig Mazin",
-		url: "https://johnaugust.com/scriptnotes"
-	}
+	test('missing title returns 400', async () => {
+		const newBlog = {
+			author: "Craig Mazin",
+			url: "https://johnaugust.com/scriptnotes",
+			likes: 10
+		}
 
-	await api
-		.post('/api/blogs')
-		.send(newBlog)
-		.expect(201)
+		await api
+			.post('/api/blogs')
+			.send(newBlog)
+			.expect(400)
+	})
 
-	const currentBlogs = await helper.blogsInDatabase()
-	const addedBlog = currentBlogs.filter(blog => blog.title === "Script Notes")
+	test('missing url returns 400', async () => {
+		const newBlog = {
+			title: "Script Notes",
+			author: "Craig Mazin",
+			likes: 10
+		}
 
-	expect(addedBlog[0].likes).toEqual(0)
-})
-
-test('missing title returns 400', async () => {
-	const newBlog = {
-		author: "Craig Mazin",
-		url: "https://johnaugust.com/scriptnotes",
-		likes: 10
-	}
-
-	await api
-		.post('/api/blogs')
-		.send(newBlog)
-		.expect(400)
-})
-
-test('missing url returns 400', async () => {
-	const newBlog = {
-		title: "Script Notes",
-		author: "Craig Mazin",
-		likes: 10
-	}
-
-	await api
-		.post('/api/blogs')
-		.send(newBlog)
-		.expect(400)
+		await api
+			.post('/api/blogs')
+			.send(newBlog)
+			.expect(400)
+	})
 })
 
 describe('deleting a blog', () => {

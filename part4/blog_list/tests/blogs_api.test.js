@@ -67,8 +67,6 @@ test('missing likes defaults to zero', async () => {
 	const currentBlogs = await helper.blogsInDatabase()
 	const addedBlog = currentBlogs.filter(blog => blog.title === "Script Notes")
 
-	console.log(addedBlog)
-
 	expect(addedBlog[0].likes).toEqual(0)
 })
 
@@ -96,6 +94,50 @@ test('missing url returns 400', async () => {
 		.post('/api/blogs')
 		.send(newBlog)
 		.expect(400)
+})
+
+describe('deleting a blog', () => {
+	test('returns 204 with valid id', async () => {
+		const blogsAtStart = await helper.blogsInDatabase()
+		const blogToDelete = blogsAtStart[0]
+
+		await api
+			.delete(`/api/blogs/${blogToDelete.id}`)
+			.expect(204)
+
+		const blogsAtEnd = await helper.blogsInDatabase()
+
+		expect(blogsAtEnd).toHaveLength(blogsAtStart.length - 1)
+
+		const blogIds = blogsAtEnd.map(blog => blog.id)
+		expect(blogIds).not.toContain(blogToDelete.id)
+	})
+})
+
+describe('updating a blog', () => {
+	test('updates the likes with valid id', async () => {
+		const blogsAtStart = await helper.blogsInDatabase()
+		const blogToUpdate = blogsAtStart[0]
+
+		const newBlog = {
+			title: blogToUpdate.title,
+			author: blogToUpdate.author,
+			url: blogToUpdate.url,
+			likes: blogToUpdate.likes + 1
+		}
+
+		await api
+			.put(`/api/blogs/${blogToUpdate.id}`)
+			.send(newBlog)
+			.expect(204)
+
+		const blogsAtEnd = await helper.blogsInDatabase()
+
+		expect(blogsAtEnd).toHaveLength(blogsAtStart.length)
+
+		const updatedBlog = blogsAtEnd.find(blog => blog.id === blogToUpdate.id)
+		expect(updatedBlog.likes).toEqual(blogToUpdate.likes + 1)
+	})
 })
 
 afterAll(async () => {

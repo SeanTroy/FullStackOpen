@@ -7,7 +7,11 @@ blogsRouter.get('/', async (request, response) => {
 })
 
 blogsRouter.post('/', async (request, response) => {
-	const blog = new Blog(request.body)
+	let { title, author, url, likes } = request.body
+	if (title === undefined || url === undefined)
+		return response.status(400).json('Bad Request')
+	likes === undefined ? likes = 0 : likes
+	const blog = new Blog({ title, author, url, likes })
 
 	const savedBlog = await blog.save()
 	response.status(201).json(savedBlog)

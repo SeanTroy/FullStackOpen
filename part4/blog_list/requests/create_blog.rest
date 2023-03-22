@@ -1,6 +1,6 @@
 POST http://localhost:3003/api/blogs/
 Content-Type: application/json
-Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3RpMTIzMjMxIiwiaWQiOiI2NDA5ZjhmYzQ4MzhlYzc2YjM3NmNjZGQiLCJpYXQiOjE2Nzk0NzUyNjd9.NtiHTr768sVdHsCxiGmhuHUSg97wyVaeyheaIXIC3Ok
+Authorization: bearer tokenContent
 
 {
 	"title": "Blogtest UUSI",

@@ -44,7 +44,7 @@ const initialUsers = [
 	{
 		username: 'testuser',
 		name: "The Test User",
-		hashedPassword: 'fakehashFAKEHASH'
+		hashedPassword: 'normalpassword'
 	}
 ]
 

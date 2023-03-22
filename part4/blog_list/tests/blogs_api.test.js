@@ -2,15 +2,22 @@ const mongoose = require('mongoose')
 const supertest = require('supertest')
 const app = require('../app')
 const api = supertest(app)
+const bcrypt = require('bcrypt')
 const helper = require('./test_helper')
 const Blog = require('../models/blog')
+const User = require('../models/user')
 
 beforeEach(async () => {
 	await Blog.deleteMany({})
-
 	const blogObjects = helper.initialBlogs.map(blog => new Blog(blog))
 	const promiseArray = blogObjects.map(blog => blog.save())
 	await Promise.all(promiseArray)
+
+	await User.deleteMany({})
+	const hashedPassword = await bcrypt.hash("tester", 10);
+	await new User({ username: "tester", hashedPassword }).save();
+	const response = await api.post('/api/login').send({ username: 'tester', password: 'tester' })
+	return (token = response.body.token)
 })
 
 describe('when retrieving blogs', () => {
@@ -45,6 +52,7 @@ describe('when adding blogs', () => {
 
 		await api
 			.post('/api/blogs')
+			.set('Authorization', `bearer ${token}`)
 			.send(newBlog)
 			.expect(201)
 
@@ -53,6 +61,23 @@ describe('when adding blogs', () => {
 
 		const blogContents = currentBlogs.map(blog => blog.title)
 		expect(blogContents).toContain("Script Notes")
+	})
+
+	test('missing token returns 401', async () => {
+		const newBlog = {
+			title: "Script Notes",
+			author: "Craig Mazin",
+			url: "https://johnaugust.com/scriptnotes",
+			likes: 16,
+		}
+
+		await api
+			.post('/api/blogs')
+			.send(newBlog)
+			.expect(401)
+
+		const currentBlogs = await helper.blogsInDatabase()
+		expect(currentBlogs).toHaveLength(helper.initialBlogs.length)
 	})
 
 	test('missing likes defaults to zero', async () => {
@@ -64,6 +89,7 @@ describe('when adding blogs', () => {
 
 		await api
 			.post('/api/blogs')
+			.set('Authorization', `bearer ${token}`)
 			.send(newBlog)
 			.expect(201)
 
@@ -102,19 +128,29 @@ describe('when adding blogs', () => {
 
 describe('deleting a blog', () => {
 	test('returns 204 with valid id', async () => {
-		const blogsAtStart = await helper.blogsInDatabase()
-		const blogToDelete = blogsAtStart[0]
+		const newBlog = {
+			title: "Script Notes",
+			author: "Craig Mazin",
+			url: "https://johnaugust.com/scriptnotes",
+			likes: 16,
+		}
+
+		const blogToDelete = await api
+			.post('/api/blogs')
+			.set('Authorization', `bearer ${token}`)
+			.send(newBlog)
 
 		await api
-			.delete(`/api/blogs/${blogToDelete.id}`)
+			.delete(`/api/blogs/${blogToDelete.body.id}`)
+			.set('Authorization', `bearer ${token}`)
 			.expect(204)
 
 		const blogsAtEnd = await helper.blogsInDatabase()
 
-		expect(blogsAtEnd).toHaveLength(blogsAtStart.length - 1)
+		expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length)
 
 		const blogIds = blogsAtEnd.map(blog => blog.id)
-		expect(blogIds).not.toContain(blogToDelete.id)
+		expect(blogIds).not.toContain(blogToDelete.body.id)
 	})
 })
 

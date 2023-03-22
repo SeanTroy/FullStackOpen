@@ -1,4 +1,5 @@
 const blogsRouter = require('express').Router()
+const jwt = require('jsonwebtoken')
 const Blog = require('../models/blog')
 const User = require('../models/user')
 
@@ -10,12 +11,10 @@ blogsRouter.get('/', async (request, response) => {
 blogsRouter.post('/', async (request, response) => {
 	let { title, author, url, likes } = request.body
 	if (title === undefined || url === undefined)
-		return response.status(400).json('Bad Request')
+		return response.status(400).json('Missing title or url from blog post')
 	likes === undefined ? likes = 0 : likes
 
-	const allUsers = await User.find({})
-	const user = allUsers[0]
-
+	const user = request.user
 	const blog = new Blog({ title, author, url, likes, user: user._id })
 
 	const savedBlog = await blog.save()
@@ -26,6 +25,11 @@ blogsRouter.post('/', async (request, response) => {
 })
 
 blogsRouter.delete('/:id', async (request, response) => {
+	const user = request.user
+	const blog = await Blog.findById(request.params.id)
+
+	if (blog.user.toString() !== user.id.toString())
+		return response.status(401).json({ error: 'user has no rights to delete this blog' })
 	await Blog.findByIdAndRemove(request.params.id)
 	response.status(204).end()
 })

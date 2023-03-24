@@ -10,11 +10,11 @@ const LoginForm = ({ setUser, setErrorMessage }) => {
 		event.preventDefault()
 		try {
 			const user = await loginService.login({ username, password })
+			window.localStorage.setItem('loggedInUser', JSON.stringify(user))
 			blogService.setToken(user.token)
 			setUser(user)
 			setUsername('')
 			setPassword('')
-			console.log('logging in with', username)
 		} catch (exception) {
 			setErrorMessage('User not found. Please check your credentials.')
 			setTimeout(() => {

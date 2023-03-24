@@ -15,6 +15,15 @@ const App = () => {
 		)
 	}, [])
 
+	useEffect(() => {
+		const loggedInUserJSON = window.localStorage.getItem('loggedInUser')
+		if (loggedInUserJSON) {
+			const user = JSON.parse(loggedInUserJSON)
+			blogService.setToken(user.token)
+			setUser(user)
+		}
+	}, [])
+
 	return (
 		<div>
 			{/* <Notification message={errorMessage} /> */}
@@ -26,7 +35,10 @@ const App = () => {
 					<p>{user.name} logged in
 						<button
 							type="submit"
-							onClick={() => setUser(null)}>
+							onClick={() => {
+								window.localStorage.removeItem('loggedInUser')
+								blogService.setToken(null)
+								setUser(null)}}>
 							logout
 						</button>
 					</p>

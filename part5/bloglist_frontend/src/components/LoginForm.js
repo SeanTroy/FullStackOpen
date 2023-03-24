@@ -2,7 +2,7 @@ import { useState } from 'react'
 import blogService from '../services/blogs'
 import loginService from '../services/login'
 
-const LoginForm = ({ setUser, setErrorMessage }) => {
+const LoginForm = ({ setUser, setNotification }) => {
 	const [username, setUsername] = useState('')
 	const [password, setPassword] = useState('')
 
@@ -16,9 +16,9 @@ const LoginForm = ({ setUser, setErrorMessage }) => {
 			setUsername('')
 			setPassword('')
 		} catch (exception) {
-			setErrorMessage('User not found. Please check your credentials.')
+			setNotification({ info: 'User not found. Please check your credentials.', state: 'error' })
 			setTimeout(() => {
-				setErrorMessage(null)
+				setNotification(null)
 			}, 5000)
 		}
 	}

@@ -1,12 +1,35 @@
 import { useState } from 'react'
+import blogService from '../services/blogs'
 
-const BlogForm = () => {
+const BlogForm = ({ setBlogs, setNotification }) => {
 	const [newTitle, setNewTitle] = useState('')
 	const [newAuthor, setNewAuthor] = useState('')
 	const [newUrl, setNewUrl] = useState('')
 
-	const addBlog = (event) => {
+	const addBlog = async (event) => {
 		event.preventDefault()
+		const newBlog = {
+			title: newTitle,
+			author: newAuthor,
+			url: newUrl
+		}
+		try {
+			await blogService.create(newBlog)
+			setNewTitle('')
+			setNewAuthor('')
+			setNewUrl('')
+			const updatedBlogs = await blogService.getAll()
+			setBlogs(updatedBlogs)
+			setNotification({ info: `A new blog ${newBlog.title} by ${newBlog.author} added.`, state: 'success' })
+			setTimeout(() => {
+				setNotification(null)
+			}, 5000)
+		} catch (exception) {
+			setNotification({ info: 'Blog saving failed. Please enter all fields.', state: 'error' })
+			setTimeout(() => {
+				setNotification(null)
+			}, 5000)
+		}
 	}
 
 	const handleTitleChange = (event) => {
@@ -43,6 +66,7 @@ const BlogForm = () => {
 				/>
 			</p>
 			<button type="submit">create</button>
+			<p></p>
 		</form>
 	)
 }

@@ -8,8 +8,8 @@ blogsRouter.get('/', async (request, response) => {
 
 blogsRouter.post('/', async (request, response) => {
 	let { title, author, url, likes } = request.body
-	if (title === undefined || url === undefined)
-		return response.status(400).json('Missing title or url from blog post')
+	if (!title || !author || !url)
+		return response.status(400).json('Missing title, author or url from blog post')
 	likes === undefined ? likes = 0 : likes
 
 	const user = request.user

@@ -1,5 +1,9 @@
 const Notification = ({ message }) => {
 
+	if (message === null) {
+		return null
+	}
+
 	let notificationStyle = {
 		color: 'green',
 		background: 'lightgrey',
@@ -8,10 +12,6 @@ const Notification = ({ message }) => {
 		borderRadius: 5,
 		padding: 10,
 		marginBottom: 10,
-	}
-
-	if (message === null) {
-		return null
 	}
 
 	if (message.state === 'error') {

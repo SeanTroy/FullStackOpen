@@ -44,8 +44,19 @@ blogsRouter.put('/:id', async (request, response) => {
 		return response.status(400).json('Bad Request')
 	likes === undefined ? likes = 0 : likes
 
+	const user = request.user
+	if (!user)
+		return response.status(401).json({ error: 'token missing or invalid' })
+
 	const newInfo = ({ title, author, url, likes })
 	const updatedBlog = await Blog.findByIdAndUpdate(request.params.id, newInfo)
+
+	if (!user.likes.find(blog => blog.toString() === updatedBlog._id.toString()))
+		user.likes = user.likes.concat(updatedBlog._id)
+	else
+		user.likes = user.likes.filter(blog => blog.toString() !== updatedBlog._id.toString())
+	await user.save()
+
 	response.status(204).json(updatedBlog)
 })
 

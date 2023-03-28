@@ -1,7 +1,6 @@
 import { useState } from 'react'
-import blogService from '../services/blogs'
 
-const BlogForm = ({ setBlogs, setNotification }) => {
+const BlogForm = ({ createBlog }) => {
 	const [newTitle, setNewTitle] = useState('')
 	const [newAuthor, setNewAuthor] = useState('')
 	const [newUrl, setNewUrl] = useState('')
@@ -13,35 +12,12 @@ const BlogForm = ({ setBlogs, setNotification }) => {
 			author: newAuthor,
 			url: newUrl
 		}
-		try {
-			await blogService.create(newBlog)
+		const result = await createBlog(newBlog)
+		if (result === true) {
 			setNewTitle('')
 			setNewAuthor('')
 			setNewUrl('')
-			const updatedBlogs = await blogService.getAll()
-			setBlogs(updatedBlogs)
-			setNotification({ info: `A new blog ${newBlog.title} by ${newBlog.author} added.`, state: 'success' })
-			setTimeout(() => {
-				setNotification(null)
-			}, 5000)
-		} catch (exception) {
-			setNotification({ info: 'Blog saving failed. Please enter all fields.', state: 'error' })
-			setTimeout(() => {
-				setNotification(null)
-			}, 5000)
 		}
-	}
-
-	const handleTitleChange = (event) => {
-		setNewTitle(event.target.value)
-	}
-
-	const handleAuthorChange = (event) => {
-		setNewAuthor(event.target.value)
-	}
-
-	const handleUrlChange = (event) => {
-		setNewUrl(event.target.value)
 	}
 
 	return (
@@ -50,23 +26,22 @@ const BlogForm = ({ setBlogs, setNotification }) => {
 			<p>title:
 				<input
 					value={newTitle}
-					onChange={handleTitleChange}
+					onChange={(event) => setNewTitle(event.target.value)}
 				/>
 			</p>
 			<p>author:
 				<input
 					value={newAuthor}
-					onChange={handleAuthorChange}
+					onChange={(event) => setNewAuthor(event.target.value)}
 				/>
 			</p>
 			<p>url:
 				<input
 					value={newUrl}
-					onChange={handleUrlChange}
+					onChange={(event) => setNewUrl(event.target.value)}
 				/>
 			</p>
-			<button type="submit">create</button>
-			<p></p>
+			<button style={{ marginBottom: '10px' }} type="submit">create</button>
 		</form>
 	)
 }

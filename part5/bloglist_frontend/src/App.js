@@ -4,6 +4,7 @@ import BlogForm from './components/BlogForm'
 import LoginForm from './components/LoginForm'
 import blogService from './services/blogs'
 import Notification from './components/Notification'
+import Togglable from './components/Togglable'
 
 const App = () => {
 	const [blogs, setBlogs] = useState([])
@@ -24,6 +25,24 @@ const App = () => {
 		}
 	}, [])
 
+	const createBlog = async (newBlog) => {
+		try {
+			const returnedBlog = await blogService.create(newBlog)
+			setBlogs(blogs.concat(returnedBlog))
+			setNotification({ info: `A new blog ${newBlog.title} by ${newBlog.author} added.`, state: 'success' })
+			setTimeout(() => {
+				setNotification(null)
+			}, 5000)
+			return (true)
+		} catch (exception) {
+			setNotification({ info: 'Blog saving failed. Please enter all fields.', state: 'error' })
+			setTimeout(() => {
+				setNotification(null)
+			}, 5000)
+			return (false)
+		}
+	}
+
 	return (
 		<div>
 			{notification && <Notification message={notification} />}
@@ -35,6 +54,7 @@ const App = () => {
 					<p>{user.name} logged in
 						<button
 							type="submit"
+							style={{ marginLeft: '10px' }}
 							onClick={() => {
 								window.localStorage.removeItem('loggedInUser')
 								blogService.setToken(null)
@@ -43,7 +63,9 @@ const App = () => {
 							logout
 						</button>
 					</p>
-					<BlogForm setBlogs={setBlogs} setNotification={setNotification} />
+					<Togglable buttonLabel="new blog">
+						<BlogForm createBlog={createBlog} />
+					</Togglable>
 					{blogs.map(blog =>
 						<Blog key={blog.id} blog={blog} />
 					)}

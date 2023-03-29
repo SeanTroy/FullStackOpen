@@ -4,7 +4,7 @@ import blogService from '../services/blogs'
 const Blog = ({ blog, blogs, setBlogs }) => {
 	const [display, setDisplay] = useState(false)
 	const user = JSON.parse(window.localStorage.getItem('loggedInUser'))
-	const liked = user.likes.includes(blog.id)
+	const liked = blog.liked_users.find(u => u.username === user.username)
 
 	const toggleDisplay = () => {
 		setDisplay(!display)
@@ -13,17 +13,21 @@ const Blog = ({ blog, blogs, setBlogs }) => {
 	const likeBlog = async () => {
 		if (liked) {
 			await blogService.update(blog.id, { ...blog, likes: blog.likes - 1 })
-			const updatedBlogs = blogs.map(b => b.id === blog.id ? { ...b, likes: b.likes - 1 } : b)
+			const updatedBlogs = blogs.map(b =>
+				b.id === blog.id
+					? { ...b, likes: b.likes - 1, liked_users: b.liked_users.filter(u => u.username !== user.username) }
+					: b
+			)
 			setBlogs(updatedBlogs.sort((a, b) => b.likes - a.likes))
-			user.likes = user.likes.filter(id => id !== blog.id)
-			window.localStorage.setItem('loggedInUser', JSON.stringify(user))
 		}
 		else {
 			await blogService.update(blog.id, { ...blog, likes: blog.likes + 1 })
-			const updatedBlogs = blogs.map(b => b.id === blog.id ? { ...b, likes: b.likes + 1 } : b)
+			const updatedBlogs = blogs.map(b =>
+				b.id === blog.id
+					? { ...b, likes: b.likes + 1, liked_users: b.liked_users.concat(user) }
+					: b
+			)
 			setBlogs(updatedBlogs.sort((a, b) => b.likes - a.likes))
-			user.likes = user.likes.concat(blog.id)
-			window.localStorage.setItem('loggedInUser', JSON.stringify(user))
 		}
 	}
 

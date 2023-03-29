@@ -3,7 +3,9 @@ const { bulkSave } = require('../models/blog')
 const Blog = require('../models/blog')
 
 blogsRouter.get('/', async (request, response) => {
-	const blogs = await Blog.find({}).populate('user', 'username name id').populate('liked_users', 'username name id')
+	const blogs = await Blog.find({})
+		.populate('user', 'username name id')
+		.populate('liked_users', 'username name id')
 	response.json(blogs)
 })
 
@@ -51,7 +53,7 @@ blogsRouter.put('/:id', async (request, response) => {
 
 	const blogToUpdate = await Blog.findById(request.params.id)
 
-	if(!blogToUpdate.liked_users.find(user => user.toString() === request.user.id.toString())) {
+	if (!blogToUpdate.liked_users.find(user => user.toString() === request.user.id.toString())) {
 		blogToUpdate.likes += 1
 		blogToUpdate.liked_users = blogToUpdate.liked_users.concat(request.user.id)
 	} else {

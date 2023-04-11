@@ -84,7 +84,7 @@ const Blog = ({ blog, blogs, setBlogs, setNotification }) => {
 							{liked && <button onClick={() => likeBlog()}>unlike</button>}
 						</div>
 						<div>added by: {blog.user.name}</div>
-						{user.username === blog.user.username &&
+						{user !== null && user.username === blog.user.username &&
 							<button style={removeButtonStyle} onClick={() => deleteBlog()}>remove</button>}
 					</div>
 				</>

@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import blogService from '../services/blogs'
 
-const Blog = ({ blog, blogs, setBlogs }) => {
+const Blog = ({ blog, blogs, setBlogs, setNotification }) => {
 	const [display, setDisplay] = useState(false)
 	const user = JSON.parse(window.localStorage.getItem('loggedInUser'))
 	const liked = blog.liked_users.find(u => u.username === user.username)
@@ -33,9 +33,20 @@ const Blog = ({ blog, blogs, setBlogs }) => {
 
 	const deleteBlog = async () => {
 		if (window.confirm(`Are you sure you want to remove blog ${blog.title} by ${blog.author}?`)) {
-			await blogService.remove(blog.id)
-			const updatedBlogs = blogs.filter(b => b.id !== blog.id)
-			setBlogs(updatedBlogs)
+			const response = await blogService.remove(blog.id)
+			if (response.error) {
+				setNotification({ info: response.error, state: 'error' })
+				setTimeout(() => {
+					setNotification(null)
+				}, 5000)
+			} else {
+				const updatedBlogs = blogs.filter(b => b.id !== blog.id)
+				setBlogs(updatedBlogs)
+				setNotification({ info: `Blog ${blog.title} by ${blog.author} removed.`, state: 'success' })
+				setTimeout(() => {
+					setNotification(null)
+				}, 5000)
+			}
 		}
 	}
 

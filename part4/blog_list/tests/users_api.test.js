@@ -21,7 +21,7 @@ describe('when creating new users', () => {
 			password: 'PerfectpassW0rD'
 		}
 
-		const response = await api.post('/api/users').send(newUser).expect(201)
+		await api.post('/api/users').send(newUser).expect(201)
 
 		const currentUsers = await helper.usersInDatabase()
 		expect(currentUsers.length).toEqual(helper.initialUsers.length + 2) // permanentuser also included

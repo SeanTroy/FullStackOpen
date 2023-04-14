@@ -44,9 +44,10 @@ const initialUsers = [
 	{
 		username: 'testuser',
 		name: "The Test User",
-		hashedPassword: 'normalpassword'
+		hashedPassword: '$2b$10$Ka0b9W1Z2RuAcjY5cQevdeNfXDLSjMTkfMGrYkyVA/.LuFX3628p6'
 	}
 ]
+// the password is the hash of 'testuser'
 
 const blogsInDatabase = async () => {
 	const blogs = await Blog.find({}).populate('user', 'username name id')

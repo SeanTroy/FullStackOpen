@@ -30,8 +30,13 @@ const App = () => {
 	}, [])
 
 	const createBlog = async (newBlog) => {
-		try {
-			const returnedBlog = await blogService.create(newBlog)
+		const returnedBlog = await blogService.create(newBlog)
+		if (returnedBlog.error) {
+			setNotification({ info: returnedBlog.error, state: 'error' })
+			setTimeout(() => {
+				setNotification(null)
+			}, 5000)
+		} else {
 			returnedBlog.user = { username: user.username }
 			setBlogs(blogs.concat(returnedBlog))
 			blogFormRef.current.toggleVisibility()
@@ -40,12 +45,50 @@ const App = () => {
 				setNotification(null)
 			}, 5000)
 			return (true)
-		} catch (exception) {
-			setNotification({ info: 'Blog saving failed. Please enter all fields.', state: 'error' })
-			setTimeout(() => {
-				setNotification(null)
-			}, 5000)
-			return (false)
+		}
+	}
+
+	const likeBlog = async (blog, liked) => {
+		if (liked) {
+			const response = await blogService.update(blog.id, { ...blog, likes: blog.likes - 1 })
+			if (!response.error) {
+				const updatedBlogs = blogs.map(b =>
+					b.id === blog.id
+						? { ...b, likes: b.likes - 1, liked_users: b.liked_users.filter(u => u.username !== user.username) }
+						: b
+				)
+				setBlogs(updatedBlogs.sort((a, b) => b.likes - a.likes))
+			}
+		}
+		else {
+			const response = await blogService.update(blog.id, { ...blog, likes: blog.likes + 1 })
+			if (!response.error) {
+				const updatedBlogs = blogs.map(b =>
+					b.id === blog.id
+						? { ...b, likes: b.likes + 1, liked_users: b.liked_users.concat(user) }
+						: b
+				)
+				setBlogs(updatedBlogs.sort((a, b) => b.likes - a.likes))
+			}
+		}
+	}
+
+	const deleteBlog = async (blog) => {
+		if (window.confirm(`Are you sure you want to remove blog ${blog.title} by ${blog.author}?`)) {
+			const response = await blogService.remove(blog.id)
+			if (response.error) {
+				setNotification({ info: response.error, state: 'error' })
+				setTimeout(() => {
+					setNotification(null)
+				}, 5000)
+			} else {
+				const updatedBlogs = blogs.filter(b => b.id !== blog.id)
+				setBlogs(updatedBlogs)
+				setNotification({ info: `Blog ${blog.title} by ${blog.author} removed.`, state: 'success' })
+				setTimeout(() => {
+					setNotification(null)
+				}, 5000)
+			}
 		}
 	}
 
@@ -73,7 +116,7 @@ const App = () => {
 						<BlogForm createBlog={createBlog} />
 					</Togglable>
 					{blogs.map(blog =>
-						<Blog key={blog.id} blog={blog} blogs={blogs} setBlogs={setBlogs} setNotification={setNotification} />
+						<Blog key={blog.id} blog={blog} likeBlog={likeBlog} deleteBlog={deleteBlog} />
 					)}
 				</div>
 			}

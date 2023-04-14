@@ -11,7 +11,7 @@ blogsRouter.get('/', async (request, response) => {
 blogsRouter.post('/', async (request, response) => {
 	let { title, author, url, likes } = request.body
 	if (!title || !author || !url)
-		return response.status(400).json('Missing title, author or url from blog post')
+		return response.status(400).json({ error: 'Missing title, author or url from blog post' })
 	likes === undefined ? likes = 0 : likes
 
 	const user = request.user

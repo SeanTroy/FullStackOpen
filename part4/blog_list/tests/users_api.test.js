@@ -6,7 +6,7 @@ const helper = require('./test_helper')
 const User = require('../models/user')
 
 beforeEach(async () => {
-	await User.deleteMany()
+	await User.deleteMany({ username: { $ne: 'permanentuser'} }) // deleting everyone except permanentuser
 
 	const userObjects = helper.initialUsers.map(user => new User(user))
 	const promiseArray = userObjects.map(user => user.save())
@@ -24,7 +24,7 @@ describe('when creating new users', () => {
 		const response = await api.post('/api/users').send(newUser).expect(201)
 
 		const currentUsers = await helper.usersInDatabase()
-		expect(currentUsers.length).toEqual(helper.initialUsers.length + 1)
+		expect(currentUsers.length).toEqual(helper.initialUsers.length + 2) // permanentuser also included
 
 		const userContents = currentUsers.map(user => user.username)
 		expect(userContents).toContain('validuser')

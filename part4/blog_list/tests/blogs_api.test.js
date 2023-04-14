@@ -8,16 +8,20 @@ const Blog = require('../models/blog')
 const User = require('../models/user')
 
 beforeEach(async () => {
+	await User.deleteMany({ username: { $ne: 'permanentuser' } }) // deleting everyone except permanentuser
+	const hashedPassword = await bcrypt.hash("tester", 10);
+	const user = await new User({ username: "tester", hashedPassword }).save();
+	const userResponse = await api.post('/api/login').send({ username: 'tester', password: 'tester' })
+
 	await Blog.deleteMany({})
-	const blogObjects = helper.initialBlogs.map(blog => new Blog(blog))
+	const blogObjects = helper.initialBlogs.map(blog => {
+		blog.user = '64393cbadfcad7866b6f2411' // user id of "permanentuser"
+		return new Blog(blog)
+	})
 	const promiseArray = blogObjects.map(blog => blog.save())
 	await Promise.all(promiseArray)
 
-	await User.deleteMany({})
-	const hashedPassword = await bcrypt.hash("tester", 10);
-	await new User({ username: "tester", hashedPassword }).save();
-	const response = await api.post('/api/login').send({ username: 'tester', password: 'tester' })
-	return (token = response.body.token)
+	return (token = userResponse.body.token)
 })
 
 describe('when retrieving blogs', () => {

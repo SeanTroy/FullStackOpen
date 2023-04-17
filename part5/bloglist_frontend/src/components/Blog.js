@@ -29,7 +29,7 @@ const Blog = ({ blog, likeBlog, deleteBlog }) => {
 	}
 
 	return (
-		<div style={blogStyle}>
+		<div style={blogStyle} className='blogentry'>
 			{blog.title} by {blog.author}
 			{!display &&
 				<button style={buttonStyle} onClick={() => toggleDisplay()}>view</button>}

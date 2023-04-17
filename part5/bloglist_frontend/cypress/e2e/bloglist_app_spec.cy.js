@@ -50,7 +50,7 @@ describe('Blog app', function () {
 			cy.get('input[name=author]').type('Test Author')
 			cy.get('input[name=url]').type('Test Url')
 			cy.contains('create').click()
-			cy.contains('Test Title by Test Author')
+			cy.get('.blogentry').contains('Test Title by Test Author')
 		})
 	})
 

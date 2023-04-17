@@ -1,11 +1,7 @@
 describe('Blog app', function () {
 	beforeEach(function () {
 		cy.request('POST', `${Cypress.env('BACKEND')}/testing/reset`)
-		const user = {
-			name: 'Permanent User',
-			username: 'permanentuser',
-			password: 'permanent'
-		}
+		const user = { name: 'Permanent User', username: 'permanentuser', password: 'permanent' }
 		cy.request('POST', `${Cypress.env('BACKEND')}/users/`, user)
 		cy.visit('')
 	})
@@ -52,11 +48,7 @@ describe('Blog app', function () {
 		})
 
 		it('a blog can be liked', function () {
-			cy.createBlog({
-				title: 'Test Title',
-				author: 'Test Author',
-				url: 'Test Url'
-			})
+			cy.createBlog({ title: 'Test Title', author: 'Test Author', url: 'Test Url' })
 			cy.get('.blogentry').contains('view').click()
 			cy.get('.blogentry').contains('likes: 0')
 			cy.get('.blogentry').contains('like').click()
@@ -64,11 +56,7 @@ describe('Blog app', function () {
 		})
 
 		it('a blog can be deleted', function () {
-			cy.createBlog({
-				title: 'Test Title',
-				author: 'Test Author',
-				url: 'Test Url'
-			})
+			cy.createBlog({ title: 'Test Title', author: 'Test Author', url: 'Test Url' })
 			cy.get('.blogentry').contains('view').click()
 			cy.get('.blogentry').contains('remove').click()
 			cy.on('window:confirm', () => true) // cypress will auto accept confirmations anyway
@@ -76,21 +64,38 @@ describe('Blog app', function () {
 		})
 
 		it('only the user who created a blog can see the delete button', function () {
-			cy.createBlog({
-				title: 'Test Title',
-				author: 'Test Author',
-				url: 'Test Url'
-			})
+			cy.createBlog({ title: 'Test Title', author: 'Test Author', url: 'Test Url' })
 			cy.get('#logoutbutton').click()
-			const testuser = {
-				name: 'Test User',
-				username: 'testuser',
-				password: 'testing'
-			}
+			const testuser = { name: 'Test User', username: 'testuser', password: 'testing' }
 			cy.request('POST', `${Cypress.env('BACKEND')}/users/`, testuser)
 			cy.login({ username: 'testuser', password: 'testing' })
 			cy.contains('view').click()
 			cy.contains('remove').should('not.exist')
+		})
+
+		it('blogs are ordered by likes', function () {
+			cy.createBlog({ title: 'Least Likes', author: 'Test Author', url: 'Test Url', likes: 3 })
+			cy.createBlog({ title: 'Most Likes', author: 'Test Author', url: 'Test Url', likes: 4 })
+			cy.createBlog({ title: 'Average Likes', author: 'Test Author', url: 'Test Url', likes: 4 })
+			cy.contains('Most Likes').contains('view').click()
+			cy.contains('Average Likes').contains('view').click()
+			cy.contains('Least Likes').contains('view').click()
+			cy.contains('Most Likes').contains('like').click()
+
+			cy.get('.blogentry').eq(0).should('contain', 'Most Likes')
+				.and('contain', 'likes: 5')
+			cy.get('.blogentry').eq(1).should('contain', 'Average Likes')
+				.and('contain', 'likes: 4')
+			cy.get('.blogentry').eq(2).should('contain', 'Least Likes')
+				.and('contain', 'likes: 3')
+
+			cy.contains('Most Likes').contains('unlike').click()
+			cy.contains('Average Likes').contains('like').click()
+
+			cy.get('.blogentry').eq(0).should('contain', 'Average Likes')
+				.and('contain', 'likes: 5')
+			cy.get('.blogentry').eq(1).should('contain', 'Most Likes')
+				.and('contain', 'likes: 4')
 		})
 	})
 

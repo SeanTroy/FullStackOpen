@@ -17,12 +17,24 @@ describe('Blog app', function () {
 		cy.contains('login')
 	})
 
-	it('user can login', function () {
-		cy.get('#username').type('permanentuser')
-		cy.get('#password').type('permanent')
-		cy.get('#loginbutton').click()
-		cy.contains('Permanent User logged in')
-		cy.contains('logout')
+	describe('login', function () {
+		it('succeeds with correct credentials', function () {
+			cy.get('#username').type('permanentuser')
+			cy.get('#password').type('permanent')
+			cy.get('#loginbutton').click()
+			cy.contains('Permanent User logged in')
+			cy.contains('logout')
+		})
+
+		it('fails with wrong credentials', function () {
+			cy.get('#username').type('wronguser')
+			cy.get('#password').type('wrongpassword')
+			cy.get('#loginbutton').click()
+			cy.get('.notification')
+				.contains('User not found. Please check your credentials.')
+				.and('have.css', 'color', 'rgb(255, 0, 0)') // the color of the notification is red
+			cy.contains('login')
+		})
 	})
 
 	describe('when logged in', function () {

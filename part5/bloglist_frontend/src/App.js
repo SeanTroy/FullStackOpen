@@ -102,6 +102,7 @@ const App = () => {
 					<h2>Blogs</h2>
 					<p>{user.name} logged in
 						<button
+							id="logoutbutton"
 							type="submit"
 							style={{ marginLeft: '10px' }}
 							onClick={() => {

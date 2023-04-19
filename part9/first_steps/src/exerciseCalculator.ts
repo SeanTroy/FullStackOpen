@@ -1,4 +1,4 @@
-import { checkNumber } from './utils'
+import { checkNumber } from './utils';
 
 export interface ReturnValues {
 	periodLength: number,
@@ -18,7 +18,7 @@ interface ExerciseValues {
 const parseArguments = (args: string[]): ExerciseValues => {
 	const errorMessage = `Error in submitted arguments.
 	Please submit the daily training hours and then target hours in the following format:
-	npm run calculateExercises '3, 0, 2.5, 2, 3.5, 2, 1' 2`
+	npm run calculateExercises '3, 0, 2.5, 2, 3.5, 2, 1' 2`;
 	if (args.length !== 4) throw new Error(errorMessage);
 
 	const hours = args[2].split(',').map(h => {
@@ -30,8 +30,8 @@ const parseArguments = (args: string[]): ExerciseValues => {
 	return {
 		hours: hours,
 		target: Number(args[3])
-	}
-}
+	};
+};
 
 export const calculateExercises = (hours: number[], target: number): ReturnValues => {
 	const periodLength = hours.length;

@@ -1,4 +1,4 @@
-import { checkNumber } from "./utils"
+import { checkNumber } from "./utils";
 
 interface BmiValues {
 	height: number,
@@ -8,14 +8,14 @@ interface BmiValues {
 const parseArguments = (args: string[]): BmiValues => {
 	const errorMessage = `Error in submitted arguments.
 	Please submit the height and weight in the following format:
-	npm run calculateBmi 180 74`
+	npm run calculateBmi 180 74`;
 	if (args.length !== 4) throw new Error(errorMessage);
 	if (!checkNumber(args[2]) || !checkNumber(args[3])) throw new Error(errorMessage);
 	return {
 		height: Number(args[2]),
 		weight: Number(args[3])
-	}
-}
+	};
+};
 
 export const calculateBmi = (height: number, weight: number): string => {
 	const index: number = weight / (height / 100) ** 2;

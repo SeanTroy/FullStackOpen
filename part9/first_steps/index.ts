@@ -31,7 +31,6 @@ app.post('/exercises', (req, res) => {
 			if (isNaN(Number(h))) throw new Error('malformatted parameters');
 			return Number(h);
 		});
-		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 		const result: ReturnValues = calculateExercises(hours, Number(target));
 		return res.send(result);
 	} catch (error: unknown) {

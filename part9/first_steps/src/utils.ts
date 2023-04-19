@@ -1,3 +1,3 @@
-export const checkNumber = (value: any): boolean => {
-	return !isNaN(Number(value))
-}
+export const checkNumber = (value: string): boolean => {
+	return !isNaN(Number(value));
+};

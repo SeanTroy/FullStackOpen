@@ -1,6 +1,6 @@
 import { checkNumber } from './utils'
 
-interface ReturnValues {
+export interface ReturnValues {
 	periodLength: number,
 	trainingDays: number,
 	success: boolean,
@@ -33,9 +33,9 @@ const parseArguments = (args: string[]): ExerciseValues => {
 	}
 }
 
-const calculateExercises = (hours: number[], target: number): ReturnValues => {
+export const calculateExercises = (hours: number[], target: number): ReturnValues => {
 	const periodLength = hours.length;
-	const average = hours.reduce((a, b) => a + b, 0) / periodLength;
+	const average = periodLength ? hours.reduce((a, b) => a + b, 0) / periodLength : 0;
 	const trainingDays = hours.filter(h => h > 0).length;
 	const success = average >= target;
 	const rating = success ? 3 : average >= target / 2 ? 2 : 1;

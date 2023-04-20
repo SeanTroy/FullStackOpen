@@ -29,6 +29,7 @@
 	},
 	"parser": "@typescript-eslint/parser",
 	"parserOptions": {
-		"project": "./GitHub/FullStackOpen/part9/first_steps/tsconfig.json"
+		"tsconfigRootDir": "./GitHub/FullStackOpen/part9/first_steps",
+		"project": "./tsconfig.json"
 	}
 }

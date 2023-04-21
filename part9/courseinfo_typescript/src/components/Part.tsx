@@ -1,4 +1,4 @@
-import { CoursePart } from '../App'
+import { CoursePart } from '../types'
 
 const assertNever = (value: never): never => {
 	throw new Error(

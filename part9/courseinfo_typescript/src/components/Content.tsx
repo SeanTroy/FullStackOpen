@@ -1,4 +1,4 @@
-import { CoursePart } from "../App";
+import { CoursePart } from "../types";
 import Part from "./Part";
 
 const Content = ({ courseParts }: { courseParts: CoursePart[] }) => {

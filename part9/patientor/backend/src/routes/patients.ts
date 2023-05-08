@@ -1,11 +1,15 @@
 import express from 'express';
-import { getNonSensitiveEntries, addPatient } from '../services/patientService';
+import { getNonSensitiveEntries, getSingleEntry, addPatient } from '../services/patientService';
 import { toNewPatientEntry } from '../utils';
 
 const router = express.Router();
 
 router.get('/', (_req, res) => {
 	res.send(getNonSensitiveEntries());
+});
+
+router.get('/:id', (req, res) => {
+	res.send(getSingleEntry(req.params.id));
 });
 
 router.post('/', (req, res) => {

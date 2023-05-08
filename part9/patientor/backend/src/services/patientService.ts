@@ -9,6 +9,10 @@ export const getEntries = (): Patient[] => {
 	return patients;
 };
 
+export const getSingleEntry = (id: string): Patient | undefined => {
+	return patients.find(p => p.id === id);
+};
+
 export const getNonSensitiveEntries = (): NonSensitivePatient[] => {
 	return patients.map(({ id, name, dateOfBirth, gender, occupation }) => ({
 		id,

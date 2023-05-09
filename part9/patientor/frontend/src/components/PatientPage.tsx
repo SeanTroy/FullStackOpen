@@ -38,6 +38,23 @@ const PatientPage = () => {
 					occupation: {patient?.occupation}
 				</Typography>
 			</Box>
+			<Box>
+				<Typography align="left" variant="h6" marginTop={'20px'}>
+					entries
+				</Typography>
+				{patient?.entries.map((entry) => (
+					<Box key={entry.id}>
+						<Typography align="left" variant="body2">
+							{entry.date} {entry.description}
+						</Typography>
+						<ul>
+							{entry.diagnosisCodes?.map((code) => (
+								<li key={code}>{code}</li>
+							))}
+						</ul>
+					</Box>
+				))}
+			</Box>
 		</div>
 	);
 };

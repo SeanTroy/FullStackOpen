@@ -5,11 +5,11 @@ import FemaleIcon from '@mui/icons-material/Female';
 import TransgenderIcon from '@mui/icons-material/Transgender';
 import { useParams } from 'react-router-dom';
 
-import { Patient } from "../types";
+import { Patient, Diagnosis } from "../types";
 
 import patientService from "../services/patients";
 
-const PatientPage = () => {
+const PatientPage = ({ diagnoses }: { diagnoses: Diagnosis[] }) => {
 
 	const [patient, setPatient] = useState<Patient | null>(null);
 	const params = useParams();
@@ -49,7 +49,9 @@ const PatientPage = () => {
 						</Typography>
 						<ul>
 							{entry.diagnosisCodes?.map((code) => (
-								<li key={code}>{code}</li>
+								<li key={code}>
+									{code} {diagnoses.find((diagnosis) => diagnosis.code === code)?.name}
+								</li>
 							))}
 						</ul>
 					</Box>

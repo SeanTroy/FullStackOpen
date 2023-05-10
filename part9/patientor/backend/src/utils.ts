@@ -6,7 +6,7 @@ import {
 	HealthCheckRating,
 	Discharge,
 	Entry,
-	TypelessEntry,
+	TypeSpecificValues,
 	SickLeave
 } from "./types";
 
@@ -123,7 +123,7 @@ const parseHealthCheckRating = (rating: unknown): HealthCheckRating => {
 	return rating;
 };
 
-const parseTypeProperties = (object: Entry): TypelessEntry => {
+const parseTypeProperties = (object: Entry): TypeSpecificValues => {
 	switch (object.type) {
 		case "Hospital":
 			return ({

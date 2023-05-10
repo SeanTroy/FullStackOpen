@@ -5,19 +5,22 @@ import FemaleIcon from '@mui/icons-material/Female';
 import TransgenderIcon from '@mui/icons-material/Transgender';
 import { useParams } from 'react-router-dom';
 
-import { Patient, Diagnosis } from "../types";
+import { Patient } from "../../types";
 
-import patientService from "../services/patients";
+import patientService from "../../services/patients";
+import EntryDetails from "./EntryDetails";
 
-const PatientPage = ({ diagnoses }: { diagnoses: Diagnosis[] }) => {
+const PatientPage = () => {
 
 	const [patient, setPatient] = useState<Patient | null>(null);
 	const params = useParams();
 
 	useEffect(() => {
 		const getPatient = async () => {
-			const patient = await patientService.getSingleEntry(params.id!);
-			setPatient(patient);
+			if (params.id) {
+				const patient = await patientService.getSingleEntry(params.id);
+				setPatient(patient);
+			}
 		};
 		void getPatient();
 	}, [params.id]);
@@ -39,22 +42,13 @@ const PatientPage = ({ diagnoses }: { diagnoses: Diagnosis[] }) => {
 				</Typography>
 			</Box>
 			<Box>
-				<Typography align="left" variant="h6" marginTop={'20px'}>
-					entries
-				</Typography>
+				{patient?.entries.length !== 0 &&
+					<Typography align="left" variant="h6" marginTop={'20px'}>
+						entries
+					</Typography>
+				}
 				{patient?.entries.map((entry) => (
-					<Box key={entry.id}>
-						<Typography align="left" variant="body2">
-							{entry.date} {entry.description}
-						</Typography>
-						<ul>
-							{entry.diagnosisCodes?.map((code) => (
-								<li key={code}>
-									{code} {diagnoses.find((diagnosis) => diagnosis.code === code)?.name}
-								</li>
-							))}
-						</ul>
-					</Box>
+					<EntryDetails key={entry.id} entry={entry} />
 				))}
 			</Box>
 		</div>

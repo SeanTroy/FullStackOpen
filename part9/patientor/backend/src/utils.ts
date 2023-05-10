@@ -93,17 +93,11 @@ const parseDiagnosisCodes = (object: unknown): Array<Diagnosis['code']> => {
 
 const parseDischarge = (discharge: unknown): Discharge => {
 	if (!discharge || typeof discharge !== 'object' ||
-		!('date' in discharge) || !('criteria' in discharge)) {
+		!('date' in discharge) || !('criteria' in discharge) ||
+		!isString(discharge.date) || !isString(discharge.criteria)) {
 		throw new Error("Incorrect or missing discharge");
 	}
 	return discharge as Discharge;
-};
-
-const parseEmployerName = (employerName: unknown): string => {
-	if (!employerName || !isString(employerName)) {
-		throw new Error("Incorrect or missing employer name");
-	}
-	return employerName;
 };
 
 const parseSickLeave = (sickLeave: unknown): SickLeave => {
@@ -133,7 +127,7 @@ const parseTypeProperties = (object: Entry): TypeSpecificValues => {
 		case "OccupationalHealthcare":
 			return ({
 					type: "OccupationalHealthcare",
-					employerName: parseEmployerName(object.employerName),
+					employerName: parseName(object.employerName),
 					sickLeave: parseSickLeave(object.sickLeave)
 				});
 		case "HealthCheck":

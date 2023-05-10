@@ -72,7 +72,7 @@ export type NewPatientEntry = Omit<Patient, 'id'>;
 type UnionOmit<T, K extends string | number | symbol> = T extends unknown ? Omit<T, K> : never;
 // Define Entry without the 'id' property
 export type NewMedicalEntry = UnionOmit<Entry, 'id'>;
-// Define TypelessEntry without the 'type' property
+// Define TypeSpecificValues with the 'type' property
 export type TypeSpecificValues = UnionOmit<Entry, keyof Omit<BaseEntry, 'type'>>;
 
 export type NonSensitivePatient = Omit<Patient, 'ssn' | 'entries'>;

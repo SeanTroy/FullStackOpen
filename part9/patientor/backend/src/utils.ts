@@ -77,11 +77,25 @@ export const toNewPatientEntry = (object: unknown): NewPatientEntry => {
 	throw new Error("Incorrect entry: some fields are missing");
 };
 
+const parseDate = (dateOfBirth: unknown): string => {
+	if (!dateOfBirth || !isString(dateOfBirth) || !isDate(dateOfBirth)) {
+		throw new Error("Incorrect or missing date");
+	}
+	return dateOfBirth;
+};
+
 const parseDescription = (description: unknown): string => {
 	if (!description || !isString(description)) {
-		throw new Error("Incorrect or missing type");
+		throw new Error("Incorrect or missing description");
 	}
 	return description;
+};
+
+const parseSpecialist = (name: unknown): string => {
+	if (!name || !isString(name)) {
+		throw new Error("Incorrect or missing specialist name");
+	}
+	return name;
 };
 
 const parseDiagnosisCodes = (object: unknown): Array<Diagnosis['code']> => {
@@ -112,7 +126,7 @@ const parseSickLeave = (sickLeave: unknown): SickLeave => {
 
 const parseHealthCheckRating = (rating: unknown): HealthCheckRating => {
 	if (!rating || typeof rating !== 'number' || !(rating in HealthCheckRating)) {
-		throw new Error("Incorrect or missing healthCheckRating");
+		throw new Error("Incorrect or missing health check rating (0 - 3)");
 	}
 	return rating;
 };
@@ -146,9 +160,9 @@ export const toNewMedicalEntry = (object: unknown): NewMedicalEntry => {
 	}
 	if ('date' in object && 'specialist' in object && 'type' in object && 'description' in object) {
 		const newEntry: NewMedicalEntry = {
-			date: parseDateOfBirth(object.date),
-			specialist: parseName(object.specialist),
+			date: parseDate(object.date),
 			description: parseDescription(object.description),
+			specialist: parseSpecialist(object.specialist),
 			...parseTypeProperties(object as Entry)
 		};
 

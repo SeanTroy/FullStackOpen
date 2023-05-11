@@ -9,6 +9,7 @@ import { Patient } from "../../types";
 
 import patientService from "../../services/patients";
 import EntryDetails from "./EntryDetails";
+import AddEntryForm from "../AddEntryModal/AddEntryForm";
 
 const PatientPage = () => {
 
@@ -25,32 +26,46 @@ const PatientPage = () => {
 		void getPatient();
 	}, [params.id]);
 
+	if (!patient) {
+		return (
+			<div className="App">
+				<Typography align="left" variant="h5" marginTop={'20px'}>
+					Waiting for patient data...
+				</Typography>
+			</div>
+		);
+	}
+
 	return (
 		<div className="App">
 			<Box>
 				<Typography align="left" variant="h5" marginTop={'20px'}>
-					{patient?.name}
-					{patient?.gender === 'male' && <MaleIcon />}
-					{patient?.gender === 'female' && <FemaleIcon />}
-					{patient?.gender === 'other' && <TransgenderIcon />}
+					{patient.name}
+					{patient.gender === 'male' && <MaleIcon />}
+					{patient.gender === 'female' && <FemaleIcon />}
+					{patient.gender === 'other' && <TransgenderIcon />}
 				</Typography>
 				<Typography align="left" variant="body1">
-					ssn: {patient?.ssn}
+					ssn: {patient.ssn}
 				</Typography>
 				<Typography align="left" variant="body1">
-					occupation: {patient?.occupation}
+					occupation: {patient.occupation}
 				</Typography>
 			</Box>
 			<Box>
-				{patient?.entries.length !== 0 &&
+				{patient.entries.length !== 0 &&
 					<Typography align="left" variant="h6" marginTop={'20px'}>
-						entries
+						Entries
 					</Typography>
 				}
-				{patient?.entries.map((entry) => (
+				{patient.entries.map((entry) => (
 					<EntryDetails key={entry.id} entry={entry} />
 				))}
 			</Box>
+			<Typography align="left" variant="h6" marginTop={'20px'}>
+				Add New Entry
+			</Typography>
+			<AddEntryForm patient={patient} setPatient={setPatient}/>
 		</div>
 	);
 };

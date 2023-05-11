@@ -196,7 +196,7 @@ const AddEntryForm = ({ patient, setPatient }:
 							variant="contained"
 							style={{ float: "left", marginTop: 10, marginBottom: 10 }}
 							type="button"
-						// onClick={onCancel}
+						onClick={clearOptions}
 						>
 							Cancel
 						</Button>

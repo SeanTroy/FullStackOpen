@@ -1,10 +1,11 @@
 import axios from "axios";
 import { SyntheticEvent, useState } from "react";
-import { Button, Grid, InputLabel, MenuItem, Select, SelectChangeEvent, TextField } from "@mui/material";
+import { Button, Grid, InputLabel, MenuItem, Select, SelectChangeEvent, TextField, Input } from "@mui/material";
 import entryService from "../../services/entries";
 import { EntryFormValues, Patient } from "../../types";
 import Notification from "../Notification";
 import { NotificationMessage } from "../../types";
+import DiagnosisSelect from "./DiagnosisSelect";
 
 const AddEntryForm = ({ patient, setPatient }:
 	{ patient: Patient, setPatient: React.Dispatch<React.SetStateAction<Patient | null>> }
@@ -13,7 +14,7 @@ const AddEntryForm = ({ patient, setPatient }:
 	const [date, setDate] = useState('');
 	const [description, setDescription] = useState('');
 	const [specialist, setSpecialist] = useState('');
-	const [diagnosisCodes, setDiagnosisCodes] = useState('');
+	const [diagnosisCodes, setDiagnosisCodes] = useState<string[]>([]);
 	const [healthCheckRating, setHealthCheckRating] = useState('');
 	const [dischargeDate, setDischargeDate] = useState('');
 	const [dischargeCriteria, setDischargeCriteria] = useState('');
@@ -29,7 +30,7 @@ const AddEntryForm = ({ patient, setPatient }:
 		setDate('');
 		setDescription('');
 		setSpecialist('');
-		setDiagnosisCodes('');
+		setDiagnosisCodes([]);
 		setHealthCheckRating('');
 		setDischargeDate('');
 		setDischargeCriteria('');
@@ -52,7 +53,7 @@ const AddEntryForm = ({ patient, setPatient }:
 				date,
 				description,
 				specialist,
-				diagnosisCodes: diagnosisCodes !== '' ? diagnosisCodes.split(' ') : [],
+				diagnosisCodes: diagnosisCodes,
 				healthCheckRating: Number(healthCheckRating)
 			} : type === "Hospital" ?
 				{
@@ -60,7 +61,7 @@ const AddEntryForm = ({ patient, setPatient }:
 					date,
 					description,
 					specialist,
-					diagnosisCodes: diagnosisCodes !== '' ? diagnosisCodes.split(' ') : [],
+					diagnosisCodes: diagnosisCodes,
 					discharge: {
 						date: dischargeDate,
 						criteria: dischargeCriteria
@@ -71,7 +72,7 @@ const AddEntryForm = ({ patient, setPatient }:
 					date,
 					description,
 					specialist,
-					diagnosisCodes: diagnosisCodes !== '' ? diagnosisCodes.split(' ') : [],
+					diagnosisCodes: diagnosisCodes,
 					employerName,
 					sickLeave: {
 						startDate: sickLeaveStartDate,
@@ -85,7 +86,7 @@ const AddEntryForm = ({ patient, setPatient }:
 			console.log(entry)
 		} catch (e) {
 			if (axios.isAxiosError(e))
-			setNotification({ state: 'error', info: e.response?.data });
+				setNotification({ state: 'error', info: e.response?.data });
 			setTimeout(() => {
 				setNotification(null);
 			}, 5000);
@@ -113,13 +114,12 @@ const AddEntryForm = ({ patient, setPatient }:
 							}</MenuItem>
 					)}
 				</Select>
-				<TextField
-					label="Date"
-					placeholder="YYYY-MM-DD"
+				<InputLabel>Date</InputLabel>
+				<Input
+					type="date"
 					fullWidth
 					value={date}
-					onChange={({ target }) => setDate(target.value)}
-				/>
+					onChange={({ target }) => setDate(target.value)} />
 				<TextField
 					label="Description"
 					fullWidth
@@ -132,13 +132,14 @@ const AddEntryForm = ({ patient, setPatient }:
 					value={specialist}
 					onChange={({ target }) => setSpecialist(target.value)}
 				/>
-				<TextField
+				<DiagnosisSelect diagnosisCodes={diagnosisCodes} setDiagnosisCodes={setDiagnosisCodes}/>
+				{/* <TextField
 					label="Diagnosis Codes"
 					placeholder="Separate codes with spaces, i.e. M24.2 M51.2 ..."
 					fullWidth
 					value={diagnosisCodes}
 					onChange={({ target }) => setDiagnosisCodes(target.value)}
-				/>
+				/> */}
 				{type === "HealthCheck" &&
 					<TextField
 						label="Health Check Rating"
@@ -149,13 +150,12 @@ const AddEntryForm = ({ patient, setPatient }:
 				}
 				{type === "Hospital" &&
 					<>
-						<TextField
-							label="Discharge Date"
-							placeholder="YYYY-MM-DD"
+						<InputLabel>Discharge Date</InputLabel>
+						<Input
+							type="date"
 							fullWidth
 							value={dischargeDate}
-							onChange={({ target }) => setDischargeDate(target.value)}
-						/>
+							onChange={({ target }) => setDischargeDate(target.value)} />
 						<TextField
 							label="Discharge Criteria"
 							fullWidth
@@ -172,21 +172,18 @@ const AddEntryForm = ({ patient, setPatient }:
 							value={employerName}
 							onChange={({ target }) => setEmployerName(target.value)}
 						/>
-						<TextField
-							label="Sick Leave Start Date"
-							placeholder="YYYY-MM-DD"
+						<InputLabel>Sick Leave Start Date</InputLabel>
+						<Input
+							type="date"
 							fullWidth
 							value={sickLeaveStartDate}
-							onChange={({ target }) => setSickLeaveStartDate(target.value)}
-						/>
-						<TextField
-							label="Sick Leave End Date"
-							placeholder="YYYY-MM-DD"
+							onChange={({ target }) => setSickLeaveStartDate(target.value)} />
+						<InputLabel>Sick Leave End Date</InputLabel>
+						<Input
+							type="date"
 							fullWidth
 							value={sickLeaveEndDate}
-							onChange={({ target }) => setSickLeaveEndDate(target.value)}
-						/>
-
+							onChange={({ target }) => setSickLeaveEndDate(target.value)} />
 					</>
 				}
 				<Grid>
@@ -196,7 +193,7 @@ const AddEntryForm = ({ patient, setPatient }:
 							variant="contained"
 							style={{ float: "left", marginTop: 10, marginBottom: 10 }}
 							type="button"
-						onClick={clearOptions}
+							onClick={clearOptions}
 						>
 							Cancel
 						</Button>
